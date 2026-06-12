@@ -1,0 +1,40 @@
+---
+import { contactLinks, site } from "../data/site";
+import BotanicalSprig from "./BotanicalSprig.astro";
+
+const year = new Date().getFullYear();
+---
+
+<footer id="contact" class="bg-ink text-paper">
+  <div class="mx-auto max-w-4xl px-5 py-16 md:px-8 md:py-20">
+    <div class="flex flex-col items-center gap-10 text-center">
+      <BotanicalSprig class="h-16 w-auto text-moss" />
+
+      <p class="font-display-soft text-3xl text-balance italic md:text-4xl">
+        Let’s correspond.
+      </p>
+
+      <ul class="flex flex-wrap items-baseline justify-center gap-x-8 gap-y-3">
+        {
+          contactLinks.map((link) => (
+            <li>
+              <a
+                href={link.href}
+                class="kicker text-sm text-paper/80 underline decoration-moss/60 underline-offset-4 transition-colors duration-200 hover:text-moss"
+              >
+                {link.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+
+      <div class="w-full border-t border-paper/15 pt-8">
+        <p class="text-sm text-paper/60">
+          © {year} {site.name} · Designed & built in {site.location} · Set in Fraunces &
+          Newsreader
+        </p>
+      </div>
+    </div>
+  </div>
+</footer>

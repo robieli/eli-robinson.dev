@@ -1,0 +1,32 @@
+---
+import { site } from "../data/site";
+
+const links = [
+  { label: "About", href: "#about" },
+  { label: "Projects", href: "#projects" },
+  { label: "Experience", href: "#experience" },
+  { label: "Contact", href: "#contact" },
+];
+---
+
+<nav class="sticky top-0 z-50 border-b border-rule bg-paper/90 backdrop-blur-sm">
+  <div class="mx-auto flex max-w-4xl items-baseline justify-between px-5 py-4 md:px-8">
+    <a href="#top" class="font-display-soft text-xl font-semibold tracking-tight text-ink">
+      {site.name}
+    </a>
+    <ul class="flex items-baseline gap-5 md:gap-8">
+      {
+        links.map((link) => (
+          <li>
+            <a
+              href={link.href}
+              class="kicker text-sm text-ink-soft transition-colors duration-200 hover:text-leaf"
+            >
+              {link.label}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</nav>

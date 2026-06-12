@@ -1,0 +1,91 @@
+@import "tailwindcss";
+
+/* Fraunces "full" variants expose the SOFT/WONK axes used in display headings */
+@import "@fontsource-variable/fraunces/full.css";
+@import "@fontsource-variable/fraunces/full-italic.css";
+@import "@fontsource-variable/newsreader";
+@import "@fontsource-variable/newsreader/wght-italic.css";
+
+@theme {
+  --color-paper: #f7f4ea;
+  --color-ink: #1e1c17;
+  --color-ink-soft: #5b564b;
+  --color-leaf: #386641;
+  --color-moss: #7d9678;
+  --color-rule: rgb(30 28 23 / 0.18);
+
+  --font-display: "Fraunces Variable", "Georgia", serif;
+  --font-body: "Newsreader Variable", "Georgia", serif;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    /* keep anchored sections clear of the sticky masthead */
+    scroll-padding-top: 5.5rem;
+  }
+
+  body {
+    @apply bg-paper font-body text-ink antialiased;
+    font-size: 1.0625rem;
+  }
+
+  ::selection {
+    background-color: var(--color-leaf);
+    color: var(--color-paper);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@utility font-display-soft {
+  font-family: var(--font-display);
+  font-variation-settings: "SOFT" 55, "WONK" 1;
+}
+
+@utility kicker {
+  font-family: var(--font-body);
+  font-variant-caps: all-small-caps;
+  letter-spacing: 0.22em;
+  font-weight: 500;
+}
+
+@utility rule-double {
+  border-top: 1px solid var(--color-ink);
+  position: relative;
+
+  &::after {
+    content: "";
+    position: absolute;
+    top: 3px;
+    left: 0;
+    right: 0;
+    border-top: 1px solid var(--color-ink);
+  }
+}
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.75rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@utility rise-in {
+  animation: rise-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+}

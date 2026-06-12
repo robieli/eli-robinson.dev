@@ -1,0 +1,39 @@
+---
+import { hero, site } from "../data/site";
+import BotanicalSprig from "./BotanicalSprig.astro";
+
+const year = new Date().getFullYear();
+---
+
+<section id="top" class="mx-auto max-w-4xl px-5 pt-16 pb-20 text-center md:px-8 md:pt-24 md:pb-28">
+  {/* dateline, in the manner of a magazine front page */}
+  <div class="rise-in flex items-center gap-4" style="animation-delay: 0ms">
+    <div class="h-px flex-1 bg-rule"></div>
+    <p class="kicker text-sm text-ink-soft">
+      {site.location} · Vol. I · Est. {year}
+    </p>
+    <div class="h-px flex-1 bg-rule"></div>
+  </div>
+
+  <h1
+    class="font-display-soft rise-in mt-12 text-6xl font-semibold tracking-tight text-balance text-ink md:mt-16 md:text-8xl"
+    style="animation-delay: 120ms"
+  >
+    {hero.headline}
+  </h1>
+
+  <p
+    class="rise-in mx-auto mt-6 max-w-xl text-xl text-pretty text-ink-soft italic md:text-2xl"
+    style="animation-delay: 240ms"
+  >
+    {hero.subhead}
+  </p>
+
+  <p class="kicker rise-in mt-8 text-sm text-leaf" style="animation-delay: 360ms">
+    {site.tagline} — {site.institution}
+  </p>
+
+  <div class="rise-in mt-12 flex justify-center md:mt-16" style="animation-delay: 480ms">
+    <BotanicalSprig class="h-28 w-auto text-leaf md:h-36" />
+  </div>
+</section>

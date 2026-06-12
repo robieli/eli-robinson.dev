@@ -1,0 +1,26 @@
+---
+import { about } from "../data/site";
+import SectionHeader from "./SectionHeader.astro";
+
+const [firstParagraph, ...restParagraphs] = about.paragraphs;
+---
+
+<section id="about" class="mx-auto max-w-4xl px-5 py-16 md:px-8 md:py-24">
+  <SectionHeader number="01" kicker="About" title="A Brief Biography" />
+
+  <div class="space-y-6 leading-relaxed text-ink/90">
+    <p
+      class="first-letter:font-display-soft first-letter:float-left first-letter:mt-1 first-letter:mr-3 first-letter:text-6xl first-letter:leading-[0.8] first-letter:font-semibold first-letter:text-leaf"
+    >
+      {firstParagraph}
+    </p>
+
+    <blockquote class="my-10 border-y border-rule py-8 text-center">
+      <p class="font-display-soft mx-auto max-w-lg text-2xl text-balance text-leaf italic md:text-3xl">
+        “{about.pullQuote}”
+      </p>
+    </blockquote>
+
+    {restParagraphs.map((paragraph) => <p>{paragraph}</p>)}
+  </div>
+</section>

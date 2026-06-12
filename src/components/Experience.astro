@@ -1,0 +1,51 @@
+---
+import { education, experience, site } from "../data/site";
+import SectionHeader from "./SectionHeader.astro";
+import type { TimelineEntry } from "../data/site";
+
+const groups: { heading: string; entries: TimelineEntry[] }[] = [
+  { heading: "Education", entries: education },
+  { heading: "Experience", entries: experience },
+];
+---
+
+<section id="experience" class="mx-auto max-w-4xl px-5 py-16 md:px-8 md:py-24">
+  <SectionHeader number="03" kicker="Curriculum Vitae" title="Education & Experience" />
+
+  <div class="space-y-14">
+    {
+      groups.map((group) => (
+        <div>
+          <h3 class="kicker mb-6 text-base text-leaf">{group.heading}</h3>
+          <ol class="space-y-10 border-l border-rule pl-6 md:pl-8">
+            {group.entries.map((entry) => (
+              <li class="relative">
+                {/* timeline marker */}
+                <span
+                  class="absolute top-2 -left-[1.95rem] size-2.5 rounded-full border border-leaf bg-paper md:-left-[2.45rem]"
+                  aria-hidden="true"
+                />
+                <p class="kicker text-sm text-ink-soft">{entry.period}</p>
+                <h4 class="font-display-soft mt-1 text-xl font-semibold text-ink md:text-2xl">
+                  {entry.title}
+                </h4>
+                <p class="mt-0.5 text-ink-soft italic">{entry.place}</p>
+                <p class="mt-2 max-w-prose leading-relaxed text-ink/90">{entry.description}</p>
+              </li>
+            ))}
+          </ol>
+        </div>
+      ))
+    }
+  </div>
+
+  <div class="mt-14 flex justify-center">
+    <a
+      href={site.resumeUrl}
+      download
+      class="kicker border border-ink px-8 py-3 text-sm text-ink transition-colors duration-200 hover:border-leaf hover:bg-leaf hover:text-paper"
+    >
+      Download Résumé (PDF)
+    </a>
+  </div>
+</section>
