@@ -1,39 +1,317 @@
 ---
-import { hero, site } from "../data/site";
-import BotanicalSprig from "./BotanicalSprig.astro";
+import { hero } from "../data/site";
 
-const year = new Date().getFullYear();
+/**
+ * Flowing-path field adapted from the "BackgroundPaths" motion component.
+ * The original animates stroke-dashoffset on 72 full-screen SVG paths, which
+ * repaints the whole vector field on the main thread every frame (the lag).
+ * Here the same geometry is handed to a single <canvas>: comet "particles"
+ * travel along each path, leaving fading trails. Canvas rasterizes far more
+ * cheaply than SVG DOM repaint, and the trail is produced by a fade buffer
+ * (destination-out) rather than per-frame gradient work.
+ *
+ * The path strings below are byte-for-byte the originals; everything else is
+ * computed in the client script from these values. Per-path speed/phase derive
+ * from the index (not Math.random) so output is deterministic.
+ */
+const VIEWBOX = { w: 696, h: 316 };
+
+// SPREAD widens the gap between adjacent lines (1 = original tight packing).
+const SPREAD = 1.95;
+const SX = 5 * SPREAD; // horizontal step between consecutive lines
+const SY = 6 * SPREAD; // vertical step between consecutive lines
+
+// Per-line jitter: the curves form a symmetric pencil that all crosses near
+// one point (a dark knot). Translating each whole line by a small deterministic
+// (dx, dy) scatters those crossings into a loose region without stacking lines.
+const JITTER_X = 34;
+const JITTER_Y = 28;
+const rand = (seed: number) => {
+  const s = Math.sin(seed * 127.1 + 311.7) * 43758.5453;
+  return s - Math.floor(s); // deterministic 0..1
+};
+
+const floatingPaths = (position: number) =>
+  Array.from({ length: 36 }, (_, i) => {
+    // The control point before the mid-path join (c2 below) is the reflection
+    // of the one after it about the join, which keeps the two cubics tangent-
+    // continuous (smooth). Jitter is added equally to every coordinate, so each
+    // line is purely translated — smoothness and the reflection are preserved.
+    const seed = i + (position === 1 ? 0 : 200);
+    const jx = (rand(seed) - 0.5) * 2 * JITTER_X;
+    const jy = (rand(seed + 97) - 0.5) * 2 * JITTER_Y;
+    const x = (v: number) => (v + jx).toFixed(1);
+    const y = (v: number) => (v + jy).toFixed(1);
+    const k = i * SX * position;
+    const m = i * SY;
+
+    const d =
+      `M${x(-380 + k)} ${y(-189 - m)}` +
+      `C${x(-380 + k)} ${y(-189 - m)} ${x(-312 - k)} ${y(216 - m)} ${x(152 - k)} ${y(343 - m)}` +
+      `C${x(616 - k)} ${y(470 - m)} ${x(684 - k)} ${y(875 - m)} ${x(684 - k)} ${y(875 - m)}`;
+
+    return { d, width: 0.5 + i * 0.03, opacity: 0.1 + i * 0.03 };
+  });
+
+const pathData = [floatingPaths(1), floatingPaths(-1)]
+  .flat()
+  .map((p, i) => ({
+    d: p.d,
+    width: p.width,
+    opacity: p.opacity,
+    // matches the original's `duration: 20 + Math.random() * 10`, but derived
+    // from the index so the build is deterministic
+    dur: 20 + ((i * 7) % 11), // seconds per draw/slide cycle
+    phase: ((i * 13) % 100) / 100, // 0..1 offset so lines desync
+  }));
+
+const words = hero.headline.split(" ");
+const letterDelay = (wordIndex: number, letterIndex: number) =>
+  wordIndex * 100 + letterIndex * 30;
 ---
 
-<section id="top" class="mx-auto max-w-4xl px-5 pt-16 pb-20 text-center md:px-8 md:pt-24 md:pb-28">
-  {/* dateline, in the manner of a magazine front page */}
-  <div class="rise-in flex items-center gap-4" style="animation-delay: 0ms">
-    <div class="h-px flex-1 bg-rule"></div>
-    <p class="kicker text-sm text-ink-soft">
-      {site.location} · Vol. I · Est. {year}
-    </p>
-    <div class="h-px flex-1 bg-rule"></div>
+<section
+  id="top"
+  class="relative flex min-h-[calc(100svh-3.75rem)] w-full items-center justify-center overflow-hidden"
+>
+  <canvas
+    id="hero-paths"
+    class="pointer-events-none absolute inset-0 h-full w-full"
+    aria-hidden="true"></canvas>
+
+  <div class="relative z-10 mx-auto max-w-4xl px-5 py-20 text-center md:px-8">
+    <h1
+      class="font-display-soft text-6xl font-semibold tracking-tight text-ink md:text-8xl"
+      aria-label={hero.headline}
+    >
+      {
+        words.map((word, wordIndex) => (
+          <span class="mr-[0.25em] inline-block last:mr-0" aria-hidden="true">
+            {word.split("").map((letter, letterIndex) => (
+              <span
+                class="letter-rise inline-block bg-gradient-to-r from-ink to-ink-soft bg-clip-text text-transparent"
+                style={`animation-delay: ${letterDelay(wordIndex, letterIndex)}ms`}
+              >
+                {letter}
+              </span>
+            ))}
+          </span>
+        ))
+      }
+    </h1>
+
+    <div class="rise-in mt-12 flex justify-center md:mt-16" style="animation-delay: 450ms">
+      <a
+        href="#about"
+        class="group inline-block rounded-full bg-gradient-to-b from-ink/15 to-ink/5 p-px shadow-sm transition-shadow duration-300 hover:shadow-md"
+      >
+        <span
+          class="kicker flex items-center rounded-full border border-rule bg-paper/95 px-7 py-3 text-sm text-ink transition-all duration-300 group-hover:-translate-y-0.5 group-hover:text-leaf"
+        >
+          Begin Reading
+          <span class="ml-3 transition-transform duration-300 group-hover:translate-x-1.5">→</span>
+        </span>
+      </a>
+    </div>
   </div>
 
-  <h1
-    class="font-display-soft rise-in mt-12 text-6xl font-semibold tracking-tight text-balance text-ink md:mt-16 md:text-8xl"
-    style="animation-delay: 120ms"
-  >
-    {hero.headline}
-  </h1>
-
-  <p
-    class="rise-in mx-auto mt-6 max-w-xl text-xl text-pretty text-ink-soft italic md:text-2xl"
-    style="animation-delay: 240ms"
-  >
-    {hero.subhead}
-  </p>
-
-  <p class="kicker rise-in mt-8 text-sm text-leaf" style="animation-delay: 360ms">
-    {site.tagline} — {site.institution}
-  </p>
-
-  <div class="rise-in mt-12 flex justify-center md:mt-16" style="animation-delay: 480ms">
-    <BotanicalSprig class="h-28 w-auto text-leaf md:h-36" />
-  </div>
+  {/* soft blur/fade band at the hero→about seam so the lines dissolve into the
+      background instead of hard-clipping at the edge */}
+  <div class="hero-seam pointer-events-none absolute inset-x-0 bottom-0" aria-hidden="true"></div>
 </section>
+
+<style>
+  @keyframes letter-rise {
+    from {
+      opacity: 0;
+      transform: translateY(0.55em);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .letter-rise {
+    animation: letter-rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  /* Feather every edge of the field to transparent so the lines fade out
+     instead of hard-clipping where they leave the screen. The bottom fade is
+     the longest, dissolving the splash into the about section below. */
+  #hero-paths {
+    -webkit-mask-image:
+      linear-gradient(to bottom, transparent 0, #000 9%, #000 72%, transparent 100%),
+      linear-gradient(to right, transparent 0, #000 7%, #000 93%, transparent 100%);
+    -webkit-mask-composite: source-in;
+    mask-image:
+      linear-gradient(to bottom, transparent 0, #000 9%, #000 72%, transparent 100%),
+      linear-gradient(to right, transparent 0, #000 7%, #000 93%, transparent 100%);
+    mask-composite: intersect;
+  }
+
+  /* a small graduated blur over the bottom seam, ramping up toward the about
+     section, so the dissolving lines also soften out of focus */
+  .hero-seam {
+    height: 24%;
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    -webkit-mask-image: linear-gradient(to bottom, transparent, #000 85%);
+    mask-image: linear-gradient(to bottom, transparent, #000 85%);
+  }
+
+  /* the canvas field is pure decoration — hide it entirely if motion is unwelcome */
+  @media (prefers-reduced-motion: reduce) {
+    #hero-paths {
+      display: none;
+    }
+  }
+</style>
+
+<script define:vars={{ pathData, VIEWBOX }}>
+  const canvas = document.getElementById("hero-paths");
+  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+  // botanical leaf green, matching --color-leaf (#386641 = 56,102,65)
+  const LEAF = "56, 102, 65";
+  // Mirrors the original framer-motion path animation: each line shows one
+  // dash segment whose length grows from SEG_MIN→SEG_MAX of the path
+  // (pathLength 0.3→1), slides back and forth along the curve (pathOffset
+  // 0→1→0), and pulses in opacity (OPA_MIN→OPA_MAX→OPA_MIN).
+  const SEG_MIN = 0.3;
+  const SEG_MAX = 1.0;
+  const OPA_MIN = 0.3;
+  const OPA_MAX = 0.6;
+
+  // Framing: which point of the path field (in viewBox units) to centre on
+  // screen, and how much to zoom. The raw geometry fans out from the
+  // bottom-left, so we centre on the body of the fan and zoom out a touch to
+  // sit it behind the name rather than in the corner.
+  const FIELD_SCALE = 0.78;
+  const FOCUS_X = 162;
+  const FOCUS_Y = 166;
+
+  // Path2D accepts SVG path data directly, so the original strings just work.
+  const paths = pathData.map((p) => ({ ...p, path: new Path2D(p.d) }));
+
+  // The original normalises pathLength to 1; canvas dashes are in user units,
+  // so measure each path's true length once via a throwaway <svg> path.
+  (() => {
+    const NS = "http://www.w3.org/2000/svg";
+    const svg = document.createElementNS(NS, "svg");
+    svg.setAttribute("width", "0");
+    svg.setAttribute("height", "0");
+    svg.style.cssText = "position:absolute;visibility:hidden;pointer-events:none";
+    const mp = document.createElementNS(NS, "path");
+    svg.appendChild(mp);
+    document.body.appendChild(svg);
+    for (const p of paths) {
+      mp.setAttribute("d", p.d);
+      p.len = mp.getTotalLength();
+    }
+    document.body.removeChild(svg);
+  })();
+
+  const ctx = canvas.getContext("2d");
+  let dpr = 1;
+  let cssW = 0;
+  let cssH = 0;
+  let scale = 1;
+  let offX = 0;
+  let offY = 0;
+
+  let ready = false;
+  function resize() {
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const rect = canvas.getBoundingClientRect();
+    cssW = rect.width;
+    cssH = rect.height;
+    // layout may not exist yet on the first parse-time call; bail until it does
+    if (cssW < 1 || cssH < 1) {
+      ready = false;
+      return;
+    }
+    canvas.width = Math.round(cssW * dpr);
+    canvas.height = Math.round(cssH * dpr);
+    // cover-scale the field, then place FOCUS at the canvas centre
+    scale = Math.max(canvas.width / VIEWBOX.w, canvas.height / VIEWBOX.h) * FIELD_SCALE;
+    offX = canvas.width / 2 - FOCUS_X * scale;
+    offY = canvas.height / 2 - FOCUS_Y * scale;
+    ctx.lineCap = "round";
+    ready = true;
+    if (reduced.matches) drawStatic();
+  }
+
+  function applyTransform() {
+    ctx.setTransform(scale, 0, 0, scale, offX, offY);
+  }
+
+  // reduced-motion fallback (also covers the brief moment before rAF starts):
+  // a single static render of the full line field, no animation.
+  function drawStatic() {
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    applyTransform();
+    ctx.setLineDash([]);
+    for (const p of paths) {
+      ctx.strokeStyle = `rgba(${LEAF}, ${Math.min(p.opacity, 1) * OPA_MAX})`;
+      ctx.lineWidth = p.width;
+      ctx.stroke(p.path);
+    }
+  }
+
+  function frame(now) {
+    if (!ready) {
+      raf = requestAnimationFrame(frame);
+      return;
+    }
+    // no trails: clear and redraw each line's current dash segment
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    applyTransform();
+
+    const t = now / 1000;
+    for (const p of paths) {
+      const u = ((t / p.dur + p.phase) % 1 + 1) % 1; // 0..1 loop
+      const tri = 1 - Math.abs(2 * u - 1); // 0→1→0
+      // length, slide and opacity all ride the same triangle so the cycle
+      // loops seamlessly — segment grows 0.3→1→0.3 instead of snapping back
+      // (the original's sawtooth pathLength caused a visible pop each loop).
+      const seg = (SEG_MIN + (SEG_MAX - SEG_MIN) * tri) * p.len;
+      const alpha = Math.min(p.opacity, 1) * (OPA_MIN + (OPA_MAX - OPA_MIN) * tri);
+      ctx.lineWidth = p.width;
+      ctx.strokeStyle = `rgba(${LEAF}, ${alpha})`;
+      // gap = full length, so only one segment shows; offset slides it along
+      ctx.setLineDash([seg, p.len]);
+      ctx.lineDashOffset = -tri * p.len;
+      ctx.stroke(p.path);
+    }
+    raf = requestAnimationFrame(frame);
+  }
+
+  let raf = 0;
+  function start() {
+    if (raf || reduced.matches) return;
+    raf = requestAnimationFrame(frame);
+  }
+  function stop() {
+    cancelAnimationFrame(raf);
+    raf = 0;
+  }
+
+  // ResizeObserver fires once the canvas actually has a laid-out size (and on
+  // every later size change), which avoids the parse-time 0×0 measurement.
+  new ResizeObserver(() => resize()).observe(canvas);
+  reduced.addEventListener("change", () => {
+    stop();
+    resize();
+    start();
+  });
+
+  // only animate while the hero is actually on screen
+  const io = new IntersectionObserver(
+    ([entry]) => (entry.isIntersecting ? start() : stop()),
+    { threshold: 0 },
+  );
+  io.observe(canvas);
+</script>
