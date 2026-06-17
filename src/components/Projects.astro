@@ -4,9 +4,11 @@ import SectionHeader from "./SectionHeader.astro";
 ---
 
 <section id="projects" class="mx-auto max-w-4xl px-5 py-16 md:px-8 md:py-24">
-  <SectionHeader number="02" title="An Index of Projects" />
+  <SectionHeader number="02" title="Catalogue of Projects" />
 
-  {/* set like a table of contents: numbered entries divided by hairline rules */}
+  {
+    /* set like a table of contents: numbered entries divided by hairline rules */
+  }
   <ol class="divide-y divide-rule border-b border-rule">
     {
       projects.map((project, i) => {
@@ -24,7 +26,9 @@ import SectionHeader from "./SectionHeader.astro";
                 <h3 class="font-display-soft text-2xl font-semibold text-ink transition-colors duration-200 group-hover:text-leaf md:text-3xl">
                   {project.title}
                 </h3>
-                <p class="mt-2 max-w-prose leading-relaxed text-ink-soft">{project.description}</p>
+                <p class="mt-2 max-w-prose leading-relaxed text-ink-soft">
+                  {project.description}
+                </p>
               </div>
               <p class="kicker col-start-2 self-start text-sm text-ink-soft md:col-start-3 md:pt-2 md:text-right">
                 {project.tags.join(" · ")}

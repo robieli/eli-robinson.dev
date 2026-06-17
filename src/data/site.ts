@@ -75,7 +75,7 @@ export const education: TimelineEntry[] = [
   {
     period: "Aug 2023 — May 2027",
     title: "B.S. Computer Science & Linguistics",
-    place: "University of Michigan, Ann Arbor",
+    place: "University of Michigan - Ann Arbor",
     description:
       "Pursuing a Bachelor's degree double-majoring in Computer Science and Linguistics. Cumulative GPA: 3.665.",
   },
