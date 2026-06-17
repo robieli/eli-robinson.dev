@@ -1,6 +1,9 @@
 ---
-import { projects } from "../data/site";
+import { projects, contactLinks } from "../data/site";
 import SectionHeader from "./SectionHeader.astro";
+
+const githubUrl = contactLinks.find((link) => link.label === "GitHub")?.href;
+const repositoriesUrl = githubUrl ? `${githubUrl}?tab=repositories` : undefined;
 ---
 
 <section id="projects" class="mx-auto max-w-4xl px-5 py-16 md:px-8 md:py-24">
@@ -39,4 +42,19 @@ import SectionHeader from "./SectionHeader.astro";
       })
     }
   </ol>
+
+  {
+    repositoriesUrl && (
+      <div class="mt-14 flex justify-center">
+        <a
+          href={repositoriesUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="kicker border border-ink px-8 py-3 text-sm text-ink transition-colors duration-200 hover:border-leaf hover:bg-leaf hover:text-paper"
+        >
+          See All
+        </a>
+      </div>
+    )
+  }
 </section>
