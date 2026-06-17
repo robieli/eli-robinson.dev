@@ -92,14 +92,15 @@ export const experience: TimelineEntry[] = [
   {
     period: "Sep 2023 — present",
     title: "Website Designer",
-    place: "University of Michigan: Student Life Technology Services - Ann Arbor, MI",
+    place:
+      "University of Michigan: Student Life Technology Services - Ann Arbor, MI",
     description:
       "Part-time, remote role designing and maintaining websites for Student Life Technology Services.",
   },
 ];
 
 export const contactLinks = [
-  { label: "Email", href: "mailto:hello@eli-robinson.dev" },
+  { label: "Email", href: "mailto:robieli@umich.edu" },
   { label: "GitHub", href: "https://github.com/robieli" },
   { label: "LinkedIn", href: "https://www.linkedin.com/in/elijah-f-robinson" },
 ] as const;
