@@ -7,12 +7,12 @@ on:
 jobs:
   deploy:
     runs-on: self-hosted
+    defaults:
+      run:
+        working-directory: /home/eli/projects/eli-robinson.dev
     steps:
-      - uses: actions/checkout@v4
-
-      - uses: pnpm/action-setup@v4
-        with:
-          version: latest
+      - name: Pull latest code
+        run: git pull
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
