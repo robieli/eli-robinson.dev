@@ -9,12 +9,14 @@ const links = [
 ];
 ---
 
-<nav class="sticky top-0 z-50 border-b border-rule bg-paper/90 backdrop-blur-sm">
-  <div class="mx-auto flex max-w-4xl items-baseline justify-between px-5 py-4 md:px-8">
+<nav id="site-nav" class="sticky top-0 z-50 border-b border-rule bg-paper/90 backdrop-blur-sm">
+  <div class="mx-auto flex max-w-4xl items-center justify-between px-5 py-4 md:px-8">
     <a href="#top" class="font-display-soft text-xl font-semibold tracking-tight text-ink">
       {site.name}
     </a>
-    <ul class="flex items-baseline gap-5 md:gap-8">
+
+    <!-- Desktop links -->
+    <ul class="hidden items-baseline gap-5 md:flex md:gap-8">
       {
         links.map((link) => (
           <li>
@@ -28,5 +30,111 @@ const links = [
         ))
       }
     </ul>
+
+    <!-- Mobile hamburger button -->
+    <button
+      id="menu-btn"
+      type="button"
+      class="kicker flex items-center gap-2.5 text-sm text-ink-soft md:hidden"
+      aria-expanded="false"
+      aria-label="Open navigation"
+    >
+      <span id="menu-label" class="leading-none translate-y-[1px]" aria-hidden="true">Menu</span>
+      <span class="flex flex-col gap-[5px]" aria-hidden="true">
+        <span id="ham-0" class="block h-px w-5 bg-ink-soft transition-all duration-300"></span>
+        <span id="ham-1" class="block h-px w-5 bg-ink-soft transition-all duration-300"></span>
+        <span id="ham-2" class="block h-px w-5 bg-ink-soft transition-all duration-300"></span>
+      </span>
+    </button>
   </div>
 </nav>
+
+<!-- Mobile menu overlay (sits below nav, hidden on md+) -->
+<div
+  id="mobile-menu"
+  class="pointer-events-none fixed left-0 right-0 bottom-0 z-40 bg-paper opacity-0 md:hidden"
+  aria-hidden="true"
+>
+  <div class="flex h-full flex-col overflow-y-auto">
+    <nav class="flex-1 px-5 pt-6 md:px-8">
+      <ul>
+        {
+          links.map((link) => (
+            <li>
+              <a
+                href={link.href}
+                class="mobile-nav-link font-display-soft block border-b border-rule py-6 text-4xl font-semibold tracking-tight text-ink transition-colors duration-200 active:text-leaf"
+              >
+                {link.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+    <div class="px-5 py-8 md:px-8">
+      <p class="kicker text-sm text-ink-soft">{site.name}</p>
+    </div>
+  </div>
+</div>
+
+<style>
+  #mobile-menu {
+    transition: opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+</style>
+
+<script>
+  const nav = document.getElementById("site-nav")!;
+  const btn = document.getElementById("menu-btn")!;
+  const menu = document.getElementById("mobile-menu")!;
+  const menuLabel = document.getElementById("menu-label")!;
+  const ham0 = document.getElementById("ham-0")!;
+  const ham1 = document.getElementById("ham-1")!;
+  const ham2 = document.getElementById("ham-2")!;
+
+  function positionMenu() {
+    menu.style.top = nav.offsetHeight + "px";
+  }
+  positionMenu();
+
+  let isOpen = false;
+
+  function openMenu() {
+    isOpen = true;
+    positionMenu();
+    menu.classList.remove("pointer-events-none", "opacity-0");
+    menu.setAttribute("aria-hidden", "false");
+    btn.setAttribute("aria-expanded", "true");
+    menuLabel.textContent = "Close";
+    document.body.style.overflow = "hidden";
+    // hamburger → X
+    ham0.style.transform = "translateY(6px) rotate(45deg)";
+    ham1.style.opacity = "0";
+    ham2.style.transform = "translateY(-6px) rotate(-45deg)";
+  }
+
+  function closeMenu() {
+    isOpen = false;
+    menu.classList.add("pointer-events-none", "opacity-0");
+    menu.setAttribute("aria-hidden", "true");
+    btn.setAttribute("aria-expanded", "false");
+    menuLabel.textContent = "Menu";
+    document.body.style.overflow = "";
+    // X → hamburger
+    ham0.style.transform = "";
+    ham1.style.opacity = "";
+    ham2.style.transform = "";
+  }
+
+  btn.addEventListener("click", () => (isOpen ? closeMenu() : openMenu()));
+
+  document.querySelectorAll(".mobile-nav-link").forEach((link) => {
+    link.addEventListener("click", closeMenu);
+  });
+
+  window.addEventListener("resize", () => {
+    positionMenu();
+    if (isOpen && window.innerWidth >= 768) closeMenu();
+  });
+</script>
