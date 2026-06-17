@@ -15,37 +15,75 @@ const links = [
       {site.name}
     </a>
 
-    <!-- Desktop links -->
-    <ul class="hidden items-baseline gap-5 md:flex md:gap-8">
-      {
-        links.map((link) => (
-          <li>
-            <a
-              href={link.href}
-              class="kicker text-sm text-ink-soft transition-colors duration-200 hover:text-leaf"
-            >
-              {link.label}
-            </a>
-          </li>
-        ))
-      }
-    </ul>
+    <div class="flex items-center gap-5 md:gap-8">
+      <!-- Desktop links -->
+      <ul class="hidden items-baseline gap-5 md:flex md:gap-8">
+        {
+          links.map((link) => (
+            <li>
+              <a
+                href={link.href}
+                class="kicker text-sm text-ink-soft transition-colors duration-200 hover:text-leaf"
+              >
+                {link.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
 
-    <!-- Mobile hamburger button -->
-    <button
-      id="menu-btn"
-      type="button"
-      class="kicker flex items-center gap-2.5 text-sm text-ink-soft md:hidden"
-      aria-expanded="false"
-      aria-label="Open navigation"
-    >
-      <span id="menu-label" class="leading-none translate-y-[1px]" aria-hidden="true">Menu</span>
-      <span class="flex flex-col gap-[5px]" aria-hidden="true">
-        <span id="ham-0" class="block h-px w-5 bg-ink-soft transition-all duration-300"></span>
-        <span id="ham-1" class="block h-px w-5 bg-ink-soft transition-all duration-300"></span>
-        <span id="ham-2" class="block h-px w-5 bg-ink-soft transition-all duration-300"></span>
-      </span>
-    </button>
+      <!-- Theme toggle (always visible) -->
+      <button
+        id="theme-toggle"
+        type="button"
+        aria-label="Toggle dark mode"
+        class="-my-1 flex items-center text-ink-soft transition-colors duration-200 hover:text-leaf"
+      >
+        {/* moon — shown in light mode (tap to go dark) */}
+        <svg
+          class="size-5 dark:hidden"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.6"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+        </svg>
+        {/* sun — shown in dark mode (tap to go light) */}
+        <svg
+          class="hidden size-5 dark:block"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.6"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <circle cx="12" cy="12" r="4" />
+          <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />
+        </svg>
+      </button>
+
+      <!-- Mobile hamburger button -->
+      <button
+        id="menu-btn"
+        type="button"
+        class="kicker flex items-center gap-2.5 text-sm text-ink-soft md:hidden"
+        aria-expanded="false"
+        aria-label="Open navigation"
+      >
+        <span id="menu-label" class="leading-none translate-y-[1px]" aria-hidden="true">Menu</span>
+        <span class="flex flex-col gap-[5px]" aria-hidden="true">
+          <span id="ham-0" class="block h-px w-5 bg-ink-soft transition-all duration-300"></span>
+          <span id="ham-1" class="block h-px w-5 bg-ink-soft transition-all duration-300"></span>
+          <span id="ham-2" class="block h-px w-5 bg-ink-soft transition-all duration-300"></span>
+        </span>
+      </button>
+    </div>
   </div>
 </nav>
 
@@ -136,5 +174,18 @@ const links = [
   window.addEventListener("resize", () => {
     positionMenu();
     if (isOpen && window.innerWidth >= 768) closeMenu();
+  });
+</script>
+
+<script>
+  const themeBtn = document.getElementById("theme-toggle");
+  themeBtn?.addEventListener("click", () => {
+    const isDark = document.documentElement.classList.toggle("dark");
+    localStorage.setItem("theme", isDark ? "dark" : "light");
+  });
+  // Follow live OS changes only until the user makes an explicit choice.
+  matchMedia("(prefers-color-scheme: dark)").addEventListener("change", (e) => {
+    if (localStorage.getItem("theme")) return;
+    document.documentElement.classList.toggle("dark", e.matches);
   });
 </script>

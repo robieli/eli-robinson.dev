@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* class-based dark mode: `dark:` utilities respond to `.dark` on <html> */
+@custom-variant dark (&:where(.dark, .dark *));
+
 /* Fraunces "full" variants expose the SOFT/WONK axes used in display headings */
 @import "@fontsource-variable/fraunces/full.css";
 @import "@fontsource-variable/fraunces/full-italic.css";
@@ -19,6 +22,15 @@
 }
 
 @layer base {
+  /* warm dark palette — overrides the @theme defaults (html.dark > :root) */
+  html.dark {
+    --color-paper: #1a1815;
+    --color-ink: #ece7d9;
+    --color-ink-soft: #a39d8e;
+    --color-leaf: #6fae78;
+    --color-rule: rgb(236 231 217 / 0.16);
+  }
+
   html {
     scroll-behavior: smooth;
     /* keep anchored sections clear of the sticky masthead */
@@ -28,6 +40,11 @@
   body {
     @apply bg-paper font-body text-ink antialiased;
     font-size: 1.0625rem;
+    /* gentle cross-fade when toggling themes (pre-paint script avoids load flash;
+       prefers-reduced-motion block below neutralizes this) */
+    transition:
+      background-color 0.3s ease,
+      color 0.3s ease;
   }
 
   ::selection {

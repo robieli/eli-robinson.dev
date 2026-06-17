@@ -5,7 +5,13 @@ import BotanicalSprig from "./BotanicalSprig.astro";
 const year = new Date().getFullYear();
 ---
 
-<footer id="contact" class="bg-ink text-paper">
+<!-- Inverted dark endcap. In dark mode the global ink/paper tokens swap, which would
+     turn this into a near-white panel; pin them locally so the footer stays a dark
+     surface (a hair lifted from the page bg) with cream text in both themes. -->
+<footer
+  id="contact"
+  class="bg-ink text-paper dark:[--color-ink:#211e1a] dark:[--color-paper:#ece7d9]"
+>
   <div class="mx-auto max-w-4xl px-5 py-16 md:px-8 md:py-20">
     <div class="flex flex-col items-center gap-10 text-center">
       <BotanicalSprig class="h-16 w-auto text-moss" />
