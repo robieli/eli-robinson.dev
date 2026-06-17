@@ -73,33 +73,33 @@ export const projects: Project[] = [
 
 export const education: TimelineEntry[] = [
   {
-    period: "2023 — present",
+    period: "Aug 2023 — May 2027",
     title: "B.S. Computer Science & Linguistics",
     place: "University of Michigan, Ann Arbor",
     description:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Relevant coursework: lorem, ipsum, dolor, sit amet.",
+      "Pursuing a Bachelor's degree double-majoring in Computer Science and Linguistics. Cumulative GPA: 3.665.",
   },
 ];
 
 export const experience: TimelineEntry[] = [
   {
-    period: "Summer 2025",
-    title: "Software Engineering Intern",
-    place: "Lorem Ipsum Co.",
+    period: "May 2025 — present",
+    title: "Software Development Intern",
+    place: "MemorAIz - Bologna, Italy",
     description:
-      "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+      "On-site software development internship building and shipping product features.",
   },
   {
-    period: "2024 — 2025",
-    title: "Research Assistant",
-    place: "Dolor Sit Lab, University of Michigan",
+    period: "Sep 2023 — present",
+    title: "Website Designer",
+    place: "University of Michigan: Student Life Technology Services - Ann Arbor, MI",
     description:
-      "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
+      "Part-time, remote role designing and maintaining websites for Student Life Technology Services.",
   },
 ];
 
 export const contactLinks = [
   { label: "Email", href: "mailto:hello@eli-robinson.dev" },
-  { label: "GitHub", href: "https://github.com/eli-robinson" },
-  { label: "LinkedIn", href: "https://www.linkedin.com/in/eli-robinson" },
+  { label: "GitHub", href: "https://github.com/robieli" },
+  { label: "LinkedIn", href: "https://www.linkedin.com/in/elijah-f-robinson" },
 ] as const;
