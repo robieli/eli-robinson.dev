@@ -1,18 +1,15 @@
 ---
 interface Props {
   number: string;
-  kicker: string;
   title: string;
 }
 
-const { number, kicker, title } = Astro.props;
+const { number, title } = Astro.props;
 ---
 
 <header class="mb-10 md:mb-14">
   <p class="kicker text-leaf">
-    <span class="mr-2">No. {number}</span>
-    <span aria-hidden="true">·</span>
-    <span class="ml-2">{kicker}</span>
+    <span>No. {number}</span>
   </p>
   <h2 class="font-display-soft mt-3 text-4xl font-semibold tracking-tight text-ink md:text-5xl">
     {title}
